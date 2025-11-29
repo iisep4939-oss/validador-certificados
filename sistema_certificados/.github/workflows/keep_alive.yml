@@ -1,0 +1,10 @@
+name: Mantener Supabase Activo
+on:
+  schedule:
+    - cron: '0 8 */2 * *' # Ejecutar cada 2 días a las 8am
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Database
+        run: curl -I https://burdkeuqrguzkmuzrqub.supabase.co

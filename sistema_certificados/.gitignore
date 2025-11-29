@@ -1,0 +1,12 @@
+# Ignorar carpetas de documentos
+entradas/
+salidas/
+
+# Ignorar archivos temporales y claves
+__pycache__/
+*.env
+.DS_Store
+
+# Ignorar entorno virtual (si usas uno)
+venv/
+env/
