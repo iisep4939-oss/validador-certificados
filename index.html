@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validación de Certificados - IISEP</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 400px; width: 100%; text-align: center; }
+        .success { color: #2ecc71; font-weight: bold; font-size: 1.2rem; }
+        .error { color: #e74c3c; font-weight: bold; }
+        .data-row { margin: 10px 0; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .label { font-size: 0.85rem; color: #777; display: block; }
+        .value { font-size: 1.1rem; color: #333; font-weight: 500; }
+        #loading { color: #3498db; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <div class="card">
+        <h2 style="color: #003366;">IISEP Validación</h2>
+        <hr>
+        
+        <div id="loading">Verificando autenticidad...</div>
+        
+        <div id="resultado" style="display: none;">
+            </div>
+    </div>
+
+    <script>
+        // --- CONFIGURACIÓN ---
+        const SUPABASE_URL = 'TU_URL_DE_SUPABASE_AQUI';
+        const SUPABASE_KEY = 'TU_KEY_ANON_PUBLIC_AQUI';
+        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function validarCertificado() {
+            // 1. Obtener el ID de la URL (ej: validar.html?id=abc-123)
+            const params = new URLSearchParams(window.location.search);
+            const idCertificado = params.get('id');
+
+            const divResultado = document.getElementById('resultado');
+            const divLoading = document.getElementById('loading');
+
+            if (!idCertificado) {
+                divLoading.style.display = 'none';
+                divResultado.style.display = 'block';
+                divResultado.innerHTML = `<p class="error">⚠️ No se proporcionó ningún código para validar.</p>`;
+                return;
+            }
+
+            // 2. Consultar a Supabase
+            const { data, error } = await supabase
+                .from('certificados')
+                .select('*')
+                .eq('uuid_publico', idCertificado)
+                .single();
+
+            divLoading.style.display = 'none';
+            divResultado.style.display = 'block';
+
+            if (error || !data) {
+                divResultado.innerHTML = `
+                    <p class="error">❌ CERTIFICADO NO ENCONTRADO</p>
+                    <p style="font-size:0.9rem">El código proporcionado no existe en nuestros registros.</p>
+                `;
+            } else {
+                // 3. Mostrar éxito
+                divResultado.innerHTML = `
+                    <p class="success">✅ CERTIFICADO VÁLIDO</p>
+                    <div class="data-row">
+                        <span class="label">Alumno:</span>
+                        <span class="value">${data.nombre_alumno}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="label">Carrera/Curso:</span>
+                        <span class="value">${data.carrera}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="label">Fecha Emisión:</span>
+                        <span class="value">${data.fecha_emision}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="label">Código Interno:</span>
+                        <span class="value">${data.codigo_interno}</span>
+                    </div>
+                `;
+            }
+        }
+
+        // Ejecutar al cargar
+        validarCertificado();
+    </script>
+</body>
+</html>
