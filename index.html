@@ -6,43 +6,276 @@
     <title>Validación Oficial de Certificados | IISEP</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --primary: #003366; --success: #27ae60; --bg: #f8f9fa; --text: #2c3e50; }
-        body { font-family: 'Roboto', sans-serif; background-color: var(--bg); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: var(--text); }
+        :root {
+            --primary: #003366;
+            --primary-light: #004b8d;
+            --success: #27ae60;
+            --success-light: #2ecc71;
+            --error: #c0392b;
+            --error-light: #e74c3c;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --text-light: #7f8c8d;
+            --border: #e9ecef;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --shadow-hover: rgba(0, 0, 0, 0.12);
+        }
         
-        .card { background: white; width: 100%; max-width: 480px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); overflow: hidden; margin: 20px; transition: transform 0.3s ease; }
-        .header { background-color: var(--primary); color: white; padding: 25px; text-align: center; }
-        .header h1 { margin: 0; font-size: 1.4rem; font-weight: 500; letter-spacing: 1px; }
-        .header p { margin: 5px 0 0; font-size: 0.8rem; opacity: 0.8; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
         
-        .content { padding: 30px; }
-        .status-icon { width: 60px; height: 60px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 30px; }
-        .valid-icon { background-color: #e8f8f5; color: var(--success); border: 2px solid var(--success); animation: pulse 2s infinite; }
-        .error-icon { background-color: #fdedec; color: #c0392b; border: 2px solid #c0392b; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text);
+            padding: 20px;
+        }
         
-        .data-grid { display: grid; gap: 15px; text-align: left; background: #fdfdfd; padding: 20px; border-radius: 8px; border: 1px solid #eee; }
-        .label { font-size: 0.75rem; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 4px; display: block; }
-        .value { font-size: 1.05rem; color: var(--primary); font-weight: 400; word-break: break-word; }
+        .card {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 520px;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px var(--shadow);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
         
-        .footer { text-align: center; padding: 20px; font-size: 0.75rem; color: #95a5a6; border-top: 1px solid #eee; background: #fafafa; }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 45px var(--shadow-hover);
+        }
         
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(39, 174, 96, 0); } 100% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0); } }
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
         
-        #loading { text-align: center; padding: 40px; }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            position: relative;
+        }
+        
+        .header p {
+            margin: 8px 0 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+            position: relative;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .status-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 36px;
+            position: relative;
+        }
+        
+        .valid-icon {
+            background-color: rgba(39, 174, 96, 0.1);
+            color: var(--success);
+            border: 3px solid var(--success);
+            animation: pulse 2s infinite;
+        }
+        
+        .error-icon {
+            background-color: rgba(192, 57, 43, 0.1);
+            color: var(--error);
+            border: 3px solid var(--error);
+        }
+        
+        .data-grid {
+            display: grid;
+            gap: 18px;
+            text-align: left;
+            background: #fdfdfd;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+        
+        .data-item {
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .data-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: block;
+        }
+        
+        .value {
+            font-size: 1.1rem;
+            color: var(--primary);
+            font-weight: 500;
+            word-break: break-word;
+            line-height: 1.4;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 25px;
+            font-size: 0.75rem;
+            color: var(--text-light);
+            border-top: 1px solid var(--border);
+            background: #fafafa;
+            line-height: 1.5;
+        }
+        
+        #loading {
+            text-align: center;
+            padding: 50px 30px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 51, 102, 0.1);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        .loading-text {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .result-title {
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        
+        .result-message {
+            text-align: center;
+            color: var(--text-light);
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.4); }
+            70% { box-shadow: 0 0 0 12px rgba(39, 174, 96, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0); }
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .card {
+                max-width: 100%;
+                margin: 10px;
+            }
+            
+            .header {
+                padding: 25px 20px;
+            }
+            
+            .content {
+                padding: 25px 20px;
+            }
+            
+            .data-grid {
+                padding: 20px 15px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="card">
         <div class="header">
+            <div class="logo-container">
+                <div class="logo">
+                    <i class="fas fa-certificate"></i>
+                </div>
+            </div>
             <h1>IISEP</h1>
             <p>Sistema de Verificación de Credenciales</p>
         </div>
 
         <div id="loading">
             <div class="spinner"></div>
-            <p>Validando autenticidad del documento...</p>
+            <p class="loading-text">Validando autenticidad del documento...</p>
         </div>
 
         <div id="resultado" class="content" style="display: none;"></div>
@@ -66,31 +299,85 @@
             if (!id) {
                 load.style.display = 'none';
                 ui.style.display = 'block';
-                ui.innerHTML = `<div class="status-icon error-icon">!</div><h3 style="text-align:center">Código QR no detectado</h3><p style="text-align:center; color:#666">Por favor escanee el código QR impreso en su certificado.</p>`;
+                ui.innerHTML = `
+                    <div class="status-icon error-icon fade-in">
+                        <i class="fas fa-exclamation"></i>
+                    </div>
+                    <h3 class="result-title">Código QR no detectado</h3>
+                    <p class="result-message">Por favor escanee el código QR impreso en su certificado.</p>
+                    <div class="data-grid fade-in">
+                        <div class="data-item">
+                            <span class="label">Solicitud de ayuda</span>
+                            <div class="value">Si necesita asistencia, contacte al departamento de certificaciones.</div>
+                        </div>
+                    </div>`;
                 return;
             }
 
+            // Simular un pequeño retraso para mostrar la animación de carga
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
             const { data, error } = await client.from('certificados').select('*').eq('uuid_publico', id).single();
             
             load.style.display = 'none';
             ui.style.display = 'block';
 
             if (error || !data) {
-                ui.innerHTML = `<div class="status-icon error-icon">✕</div><h3 style="text-align:center; color:#c0392b">Documento No Encontrado</h3><p style="text-align:center; color:#666">Este código no figura en nuestros registros oficiales.</p>`;
+                ui.innerHTML = `
+                    <div class="status-icon error-icon fade-in">
+                        <i class="fas fa-times"></i>
+                    </div>
+                    <h3 class="result-title" style="color:var(--error)">Documento No Encontrado</h3>
+                    <p class="result-message">Este código no figura en nuestros registros oficiales.</p>
+                    <div class="data-grid fade-in">
+                        <div class="data-item">
+                            <span class="label">Código consultado</span>
+                            <div class="value">${id}</div>
+                        </div>
+                        <div class="data-item">
+                            <span class="label">Recomendación</span>
+                            <div class="value">Verifique que el código QR esté legible o contacte con la institución.</div>
+                        </div>
+                    </div>`;
             } else {
                 ui.innerHTML = `
-                    <div class="status-icon valid-icon">✓</div>
-                    <h3 style="text-align:center; color:var(--success); margin-bottom:20px">Certificado Auténtico</h3>
-                    <div class="data-grid">
-                        <div><span class="label">Otorgado a</span><div class="value">${data.nombre_completo}</div></div>
-                        <div><span class="label">Identificación (DNI)</span><div class="value">${data.dni}</div></div>
-                        <div><span class="label">Módulo / Especialidad</span><div class="value">${data.modulo_curso || data.carrera}</div></div>
-                        <div><span class="label">Fecha de Emisión</span><div class="value">${data.fecha_emision_texto}</div></div>
-                        ${data.firma_autoridad ? `<div><span class="label">Autoridad</span><div class="value">${data.firma_autoridad}</div></div>` : ''}
+                    <div class="status-icon valid-icon fade-in">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <h3 class="result-title" style="color:var(--success)">Certificado Auténtico</h3>
+                    <p class="result-message">Este documento ha sido verificado y es válido.</p>
+                    <div class="data-grid fade-in">
+                        <div class="data-item">
+                            <span class="label">Otorgado a</span>
+                            <div class="value">${data.nombre_completo}</div>
+                        </div>
+                        <div class="data-item">
+                            <span class="label">Identificación (DNI)</span>
+                            <div class="value">${data.dni}</div>
+                        </div>
+                        <div class="data-item">
+                            <span class="label">Módulo / Especialidad</span>
+                            <div class="value">${data.modulo_curso || data.carrera}</div>
+                        </div>
+                        <div class="data-item">
+                            <span class="label">Fecha de Emisión</span>
+                            <div class="value">${data.fecha_emision_texto}</div>
+                        </div>
+                        ${data.firma_autoridad ? `
+                        <div class="data-item">
+                            <span class="label">Autoridad</span>
+                            <div class="value">${data.firma_autoridad}</div>
+                        </div>` : ''}
+                        <div class="data-item">
+                            <span class="label">Estado</span>
+                            <div class="value" style="color:var(--success)">Válido y verificado</div>
+                        </div>
                     </div>`;
             }
         }
-        init();
+        
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>

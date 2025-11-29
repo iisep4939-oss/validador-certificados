@@ -8,6 +8,7 @@ import qrcode
 import pdfplumber
 import subprocess
 from tkinter import filedialog, messagebox
+import tkinter # Necesario para el manejo de errores fatal
 from supabase import create_client
 from pypdf import PdfReader, PdfWriter
 from reportlab.pdfgen import canvas
@@ -20,7 +21,7 @@ ctk.set_default_color_theme("dark-blue")
 # --- TUS CREDENCIALES ---
 URL_SUPABASE = "https://burdkeuqrguzkmuzrqub.supabase.co"
 KEY_SUPABASE = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1cmRrZXVxcmd1emttdXpycXViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQzNjQ0MjAsImV4cCI6MjA3OTk0MDQyMH0.YlLkJuXSpyGdr8KsGIDTO1Cf9sexr4BlzP_pDQoMa5s"
-WEB_URL = "https://validador-certificados-tau.vercel.app"
+WEB_URL = "https://validador-certificados.vercel.app/"
 
 class CertificadosApp(ctk.CTk):
     def __init__(self):
@@ -294,11 +295,10 @@ class CertificadosApp(ctk.CTk):
         qr_temp = f"temp_{int(time.time())}.png"
         qr_img.save(qr_temp)
 
-        # D. Estampar (CORRECCIÓN CRÍTICA AQUÍ)
+        # D. Estampar
         try:
             packet = io.BytesIO()
             can = canvas.Canvas(packet, pagesize=A4)
-            # Ajusta posición (X, Y)
             can.drawImage(qr_temp, 50, 50, width=90, height=90) 
             can.setFont("Helvetica", 8)
             can.drawString(50, 40, "Escanear para validar")
@@ -307,22 +307,27 @@ class CertificadosApp(ctk.CTk):
             packet.seek(0)
             new_pdf = PdfReader(packet)
 
-            # --- LA CLAVE DEL ARREGLO: 'with open' ---
-            # Abrimos el archivo PDF original en modo binario
-            # y lo mantenemos abierto durante el merge
             with open(filepath, "rb") as f_in:
                 existing_pdf = PdfReader(f_in)
                 output = PdfWriter()
-                
-                # Obtenemos la página y la fusionamos
                 page = existing_pdf.pages[0]
                 page.merge_page(new_pdf.pages[0])
                 output.add_page(page)
                 
-                # Guardamos el resultado
-                out_path = os.path.join(self.output_folder, filename)
+                # Gestión de nombre de archivo para evitar bloqueos
+                nombre_base = filename
+                out_path = os.path.join(self.output_folder, nombre_base)
+                
+                if os.path.exists(out_path):
+                    timestamp = int(time.time())
+                    nombre_sin_ext = os.path.splitext(filename)[0]
+                    nombre_base = f"{nombre_sin_ext}_{timestamp}.pdf"
+                    out_path = os.path.join(self.output_folder, nombre_base)
+
                 with open(out_path, "wb") as f_out:
                     output.write(f_out)
+                    
+            self.log(f"--> Guardado como: {nombre_base}", "success")
                     
         finally:
             if os.path.exists(qr_temp):
@@ -336,6 +341,14 @@ class CertificadosApp(ctk.CTk):
         self.progress.set(0)
         self.lbl_progress.configure(text="0%")
 
+# --- BLOQUE DE SEGURIDAD PARA EL EXE ---
+# Esto captura errores de inicio (como faltas de librerías) y muestra una ventana
 if __name__ == "__main__":
-    app = CertificadosApp()
-    app.mainloop()
+    try:
+        app = CertificadosApp()
+        app.mainloop()
+    except Exception as e:
+        # Si CustomTkinter falla al cargar, usamos Tkinter básico para avisar
+        root = tkinter.Tk()
+        root.withdraw()
+        messagebox.showerror("Error Fatal al Iniciar", f"El programa no pudo arrancar:\n\n{e}")
