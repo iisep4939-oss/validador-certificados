@@ -8,7 +8,7 @@ from reportlab.lib.pagesizes import A4
 # --- CONFIGURACIÓN ---
 URL_SUPABASE = "https://burdkeuqrguzkmuzrqub.supabase.co"
 KEY_SUPABASE = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1cmRrZXVxcmd1emttdXpycXViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQzNjQ0MjAsImV4cCI6MjA3OTk0MDQyMH0.YlLkJuXSpyGdr8KsGIDTO1Cf9sexr4BlzP_pDQoMa5s"
-URL_WEB_VALIDADOR = "http://localhost:5500/index.html" # O localhost
+URL_WEB_VALIDADOR = "https://validador-certificados.vercel.app/" # O localhost
 
 # Archivo origen y destino
 INPUT_PDF = "CONSTANCIA.pdf"  # El archivo que subiste
