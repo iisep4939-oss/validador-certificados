@@ -1,5 +1,6 @@
 import io
 import qrcode
+import time
 from supabase import create_client
 from pypdf import PdfReader, PdfWriter
 from reportlab.pdfgen import canvas
