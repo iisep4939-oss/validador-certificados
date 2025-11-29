@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual - Generador IISEP</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f4f7f6; }
+        .container { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1 { color: #002B5C; border-bottom: 2px solid #F39C12; padding-bottom: 10px; }
+        h2 { color: #002B5C; margin-top: 30px; }
+        .step { background: #eef2f5; padding: 15px; border-left: 5px solid #F39C12; margin-bottom: 20px; border-radius: 4px; }
+        .warning { background: #fff3cd; color: #856404; padding: 15px; border-radius: 4px; border: 1px solid #ffeeba; }
+        code { background: #eee; padding: 2px 5px; border-radius: 3px; font-family: monospace; }
+        .btn-sim { background: #F39C12; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.9em; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Manual de Usuario - Certificador IISEP</h1>
+        <p>Bienvenido al sistema oficial de emisión de certificados digitales.</p>
+
+        <h2>1. Pasos para Generar</h2>
+        
+        <div class="step">
+            <strong>Paso 1: Datos del Alumno</strong><br>
+            Ingrese el <em>Nombre Completo</em> (se convertirá a mayúsculas automáticamente) y el <em>DNI</em>. Seleccione la carrera o curso de la lista desplegable.
+        </div>
+
+        <div class="step">
+            <strong>Paso 2: Cargar PDF Base</strong><br>
+            Haga clic en <span class="btn-sim">📂 Cargar PDF</span>. Debe seleccionar el diseño del certificado <strong>sin rellenar</strong> (plantilla limpia).
+        </div>
+
+        <div class="step">
+            <strong>Paso 3: Generar</strong><br>
+            Presione <span class="btn-sim">✨ GENERAR CERTIFICADO</span>. El sistema subirá los datos a la nube y estampará el código QR único en la parte inferior del documento.
+        </div>
+
+        <h2>2. Solución de Problemas Comunes</h2>
+        <div class="warning">
+            <strong>⚠️ El programa no avanza o da error:</strong>
+            <ul>
+                <li>Verifique su conexión a Internet (necesaria para el código QR).</li>
+                <li>Asegúrese de que el PDF base no esté abierto en otro programa (Word, Adobe, Chrome).</li>
+                <li>Si el PDF generado sale en blanco, intente usar una plantilla en formato PDF estándar (versión 1.4 o superior).</li>
+            </ul>
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ El QR tapa el texto:</strong>
+            El sistema coloca el QR automáticamente abajo a la izquierda. Asegúrese de que su diseño tenga espacio libre en esa zona.
+        </div>
+
+        <footer style="margin-top: 50px; text-align: center; font-size: 0.8em; color: #777;">
+            Soporte Técnico IISEP - Departamento de TI
+        </footer>
+    </div>
+</body>
+</html>
