@@ -10,18 +10,22 @@ from tkinter import filedialog, messagebox
 from supabase import create_client
 
 # --- CONFIGURACIÓN DE RUTAS ---
-# Pon aquí la ruta de tu icono (debe ser .ico para Windows)
-# Si el archivo no existe, el programa abrirá con el icono por defecto sin errores.
-RUTA_ICONO = "sistema_certificados\scripts\logo_iisep.png" 
+RUTA_ICONO = "logo_iisep.ico" 
 
-# --- PALETA IISEP (BRANDING) ---
+# --- PALETA IISEP MEJORADA ---
 COLOR_FONDO_APP = "#0a192f"      # Azul muy oscuro (Fondo general)
 COLOR_PANEL = "#112240"          # Azul marino institucional (Paneles)
 COLOR_ACENTO = "#f39c12"         # Naranja IISEP (Botón Principal)
+COLOR_ACENTO_HOVER = "#e67e22"   # Naranja más oscuro para hover
 COLOR_TEXTO = "#e6f1ff"          # Blanco azulado (Textos generales)
+COLOR_TEXTO_SECUNDARIO = "#8da2b5" # Texto secundario
 COLOR_VERDE = "#00b894"          # Éxito / Abrir
+COLOR_VERDE_HOVER = "#00a085"    # Verde hover
 COLOR_ROJO = "#d63031"           # Limpiar / Cancelar
+COLOR_ROJO_HOVER = "#c0392b"     # Rojo hover
 COLOR_INPUT = "#1d3557"          # Fondo de los inputs
+COLOR_BORDE = "#2c3e50"          # Color de bordes
+COLOR_GRIS_OSCURO = "#34495e"    # Gris oscuro para elementos secundarios
 
 # --- DATOS IISEP ---
 CARRERAS_IISEP = [
@@ -53,18 +57,19 @@ class SingleCertApp(ctk.CTk):
 
         # Configuración Visual
         ctk.set_appearance_mode("Dark")
-        self.configure(fg_color=COLOR_FONDO_APP) # Fondo general de la ventana
+        ctk.set_default_color_theme("blue")  # Tema base azul
+        self.configure(fg_color=COLOR_FONDO_APP)
 
         self.title("Sistema de Certificación IISEP - v2.1")
-        self.geometry("1150x780")
-        self.minsize(950, 650)
+        self.geometry("1200x800")
+        self.minsize(1000, 700)
         
         # --- CARGA DE ICONO SEGURA ---
         try:
             if os.path.exists(RUTA_ICONO):
                 self.iconbitmap(RUTA_ICONO)
         except Exception:
-            pass # Si falla, usa el de Tkinter por defecto
+            pass
 
         # Variables de Estado
         self.selected_file_path = None
@@ -90,117 +95,198 @@ class SingleCertApp(ctk.CTk):
             self.btn_process.configure(state="normal", text="✨ GENERAR CERTIFICADO")
         except Exception as e:
             print(f"Error conexión: {e}")
-            self.btn_process.configure(text="⚠️ Error de Conexión (Reiniciar)", fg_color=COLOR_ROJO)
+            self.btn_process.configure(text="⚠️ Error de Conexión (Reiniciar)", 
+                                      fg_color=COLOR_ROJO, hover_color=COLOR_ROJO_HOVER)
 
-    # --- HEADER ---
+    # --- HEADER MEJORADO ---
     def setup_header(self):
-        self.header = ctk.CTkFrame(self, height=50, corner_radius=0, fg_color=COLOR_PANEL)
-        self.header.grid(row=0, column=0, columnspan=2, sticky="ew")
+        self.header = ctk.CTkFrame(self, height=70, corner_radius=0, fg_color=COLOR_PANEL, border_width=0)
+        self.header.grid(row=0, column=0, columnspan=2, sticky="ew", padx=0, pady=0)
+        self.header.grid_columnconfigure(0, weight=1)
         
-        # Logo o Texto corporativo
-        ctk.CTkLabel(self.header, text="  SISTEMA DE CERTIFICACIÓN DIGITAL", 
-                     font=("Roboto", 16, "bold"), text_color="white").pack(side="left", padx=20)
+        # Contenedor interno para centrar contenido
+        header_content = ctk.CTkFrame(self.header, fg_color="transparent")
+        header_content.pack(expand=True, fill="both", padx=20)
         
-        # Switch simplificado
-        self.switch = ctk.CTkSwitch(self.header, text="Modo Oscuro", command=self.toggle_theme, 
-                                    progress_color=COLOR_ACENTO)
-        self.switch.pack(side="right", padx=20)
-        self.switch.select() 
+        # Logo o Texto corporativo con mejor tipografía
+        ctk.CTkLabel(header_content, text="IISEP - SISTEMA DE CERTIFICACIÓN DIGITAL", 
+                     font=("Roboto", 18, "bold"), text_color="white").pack(side="left")
+        
+        # Switch con mejor diseño
+        self.switch = ctk.CTkSwitch(header_content, text="Modo Oscuro", command=self.toggle_theme, 
+                                    progress_color=COLOR_ACENTO, button_color=COLOR_GRIS_OSCURO,
+                                    button_hover_color=COLOR_ACENTO_HOVER)
+        self.switch.pack(side="right", padx=10)
+        self.switch.select()
 
     def toggle_theme(self):
         if self.switch.get() == 1:
             ctk.set_appearance_mode("Dark")
             self.configure(fg_color=COLOR_FONDO_APP)
             self.frame_left.configure(fg_color=COLOR_PANEL)
-            self.lbl_filename.configure(text_color="gray")
+            self.lbl_filename.configure(text_color=COLOR_TEXTO_SECUNDARIO)
         else:
             ctk.set_appearance_mode("Light")
-            self.configure(fg_color="#f0f2f5") # Gris muy claro para modo claro
+            self.configure(fg_color="#f8f9fa")
             self.frame_left.configure(fg_color="white")
-            self.lbl_filename.configure(text_color="black")
+            self.lbl_filename.configure(text_color="#6c757d")
 
-    # --- PANEL IZQUIERDO: FORMULARIO (BRANDING APLICADO) ---
+    # --- PANEL IZQUIERDO: FORMULARIO MEJORADO ---
     def setup_left_panel(self):
-        self.frame_left = ctk.CTkFrame(self, corner_radius=15, fg_color=COLOR_PANEL)
-        self.frame_left.grid(row=1, column=0, sticky="nsew", padx=15, pady=15)
+        self.frame_left = ctk.CTkFrame(self, corner_radius=12, fg_color=COLOR_PANEL, 
+                                      border_width=1, border_color=COLOR_BORDE)
+        self.frame_left.grid(row=1, column=0, sticky="nsew", padx=(15, 10), pady=15)
         
-        # Título Naranja
-        ctk.CTkLabel(self.frame_left, text="DATOS DEL ESTUDIANTE", 
-                     font=("Roboto", 18, "bold"), text_color=COLOR_ACENTO).pack(pady=(30, 20))
+        # Título con mejor diseño
+        title_frame = ctk.CTkFrame(self.frame_left, fg_color="transparent", height=50)
+        title_frame.pack(fill="x", padx=20, pady=(25, 10))
+        
+        ctk.CTkLabel(title_frame, text="DATOS DEL ESTUDIANTE", 
+                     font=("Roboto", 20, "bold"), text_color=COLOR_ACENTO).pack(side="left")
+        
+        # Línea decorativa bajo el título
+        separator = ctk.CTkFrame(title_frame, height=2, fg_color=COLOR_ACENTO, corner_radius=1)
+        separator.pack(side="bottom", fill="x", pady=(5, 0))
 
-        # Inputs con estilo unificado
+        # Contenedor para inputs con scroll si es necesario
+        self.scrollable_frame = ctk.CTkScrollableFrame(self.frame_left, fg_color="transparent")
+        self.scrollable_frame.pack(fill="both", expand=True, padx=20, pady=10)
+
+        # Inputs con estilo mejorado
         self.create_label("Nombre Completo:")
-        self.entry_nom = ctk.CTkEntry(self.frame_left, width=280, placeholder_text="Ej: MARIA LOPEZ", fg_color=COLOR_INPUT, border_color="#2c3e50")
+        self.entry_nom = ctk.CTkEntry(self.scrollable_frame, width=280, height=40,
+                                     placeholder_text="Ej: MARIA LOPEZ", 
+                                     fg_color=COLOR_INPUT, border_color=COLOR_BORDE,
+                                     text_color=COLOR_TEXTO, placeholder_text_color=COLOR_TEXTO_SECUNDARIO)
         self.entry_nom.pack(pady=(0, 15))
 
         self.create_label("DNI:")
-        self.entry_dni = ctk.CTkEntry(self.frame_left, width=280, placeholder_text="8 dígitos", fg_color=COLOR_INPUT, border_color="#2c3e50")
+        self.entry_dni = ctk.CTkEntry(self.scrollable_frame, width=280, height=40,
+                                     placeholder_text="8 dígitos", 
+                                     fg_color=COLOR_INPUT, border_color=COLOR_BORDE,
+                                     text_color=COLOR_TEXTO, placeholder_text_color=COLOR_TEXTO_SECUNDARIO)
         self.entry_dni.pack(pady=(0, 15))
 
         self.create_label("Especialidad / Taller:")
-        self.combo_carrera = ctk.CTkComboBox(self.frame_left, values=CARRERAS_IISEP, width=280, fg_color=COLOR_INPUT, border_color="#2c3e50", button_color=COLOR_ACENTO, button_hover_color="#e67e22")
+        self.combo_carrera = ctk.CTkComboBox(self.scrollable_frame, values=CARRERAS_IISEP, 
+                                            width=280, height=40,
+                                            fg_color=COLOR_INPUT, border_color=COLOR_BORDE,
+                                            button_color=COLOR_ACENTO, button_hover_color=COLOR_ACENTO_HOVER,
+                                            text_color=COLOR_TEXTO, dropdown_text_color=COLOR_TEXTO,
+                                            dropdown_fg_color=COLOR_PANEL, dropdown_hover_color=COLOR_ACENTO)
         self.combo_carrera.set("Computación") 
         self.combo_carrera.pack(pady=(0, 15))
 
         self.create_label("Fecha de Emisión:")
-        self.entry_fecha = ctk.CTkEntry(self.frame_left, width=280, fg_color=COLOR_INPUT, border_color="#2c3e50")
+        self.entry_fecha = ctk.CTkEntry(self.scrollable_frame, width=280, height=40,
+                                       fg_color=COLOR_INPUT, border_color=COLOR_BORDE,
+                                       text_color=COLOR_TEXTO)
         self.entry_fecha.insert(0, time.strftime("%d/%m/%Y")) 
-        self.entry_fecha.pack(pady=(0, 30))
+        self.entry_fecha.pack(pady=(0, 25))
 
-        # Sección Archivo
-        ctk.CTkLabel(self.frame_left, text="DOCUMENTO BASE", font=("Roboto", 14, "bold"), text_color="white").pack(pady=(10, 5))
+        # Sección Archivo con mejor diseño
+        file_section = ctk.CTkFrame(self.scrollable_frame, fg_color="transparent")
+        file_section.pack(fill="x", pady=(10, 5))
         
-        self.lbl_filename = ctk.CTkLabel(self.frame_left, text="Ningún archivo seleccionado", text_color="gray", wraplength=280)
-        self.lbl_filename.pack(pady=(0, 10))
+        ctk.CTkLabel(file_section, text="DOCUMENTO BASE", 
+                     font=("Roboto", 16, "bold"), text_color="white").pack(anchor="w")
         
-        # Botón Cargar (Azul discreto)
-        self.btn_load = ctk.CTkButton(self.frame_left, text="📂 Cargar Plantilla PDF", 
+        self.lbl_filename = ctk.CTkLabel(file_section, text="Ningún archivo seleccionado", 
+                                        text_color=COLOR_TEXTO_SECUNDARIO, wraplength=280)
+        self.lbl_filename.pack(anchor="w", pady=(5, 10))
+        
+        # Botón Cargar con mejor diseño
+        self.btn_load = ctk.CTkButton(file_section, text="📂 CARGAR PLANTILLA PDF", 
                                       command=self.select_file, 
-                                      fg_color="#34495e", hover_color="#4b6584", height=40)
+                                      fg_color=COLOR_GRIS_OSCURO, hover_color="#4b6584", 
+                                      height=45, width=280, font=("Roboto", 13, "bold"))
         self.btn_load.pack(pady=5)
 
-        # Botón Principal (NARANJA FUERTE - CTA)
+        # Botón Principal mejorado
         self.btn_process = ctk.CTkButton(self.frame_left, text="⏳ Conectando...", state="disabled", 
                                          command=self.start_processing, 
-                                         fg_color=COLOR_ACENTO, hover_color="#e67e22", text_color="black", # Texto negro para contraste
-                                         height=55, font=("Roboto", 16, "bold"))
-        self.btn_process.pack(side="bottom", pady=40, padx=20, fill="x")
+                                         fg_color=COLOR_ACENTO, hover_color=COLOR_ACENTO_HOVER, 
+                                         text_color="black", height=60, 
+                                         font=("Roboto", 17, "bold"), corner_radius=10)
+        self.btn_process.pack(side="bottom", pady=25, padx=20, fill="x")
 
     def create_label(self, text):
-        ctk.CTkLabel(self.frame_left, text=text, anchor="w", font=("Roboto", 12), text_color=COLOR_TEXTO).pack(anchor="center", padx=45, fill="x")
+        ctk.CTkLabel(self.scrollable_frame, text=text, anchor="w", 
+                    font=("Roboto", 14), text_color=COLOR_TEXTO).pack(anchor="w", pady=(10, 5))
 
-    # --- PANEL DERECHO: VISTA PREVIA ---
+    # --- PANEL DERECHO: VISTA PREVIA MEJORADA ---
     def setup_right_panel(self):
-        # Panel derecho ligeramente más claro que el fondo pero oscuro
-        self.frame_right = ctk.CTkFrame(self, fg_color="#0d1b2a", corner_radius=15)
-        self.frame_right.grid(row=1, column=1, sticky="nsew", padx=(0, 15), pady=15)
+        self.frame_right = ctk.CTkFrame(self, fg_color="#0d1b2a", corner_radius=12,
+                                       border_width=1, border_color=COLOR_BORDE)
+        self.frame_right.grid(row=1, column=1, sticky="nsew", padx=(10, 15), pady=15)
         
         self.frame_right.grid_rowconfigure(0, weight=1)
         self.frame_right.grid_columnconfigure(0, weight=1)
 
-        # Label para la imagen
-        self.lbl_preview = ctk.CTkLabel(self.frame_right, text="\n\nVista Previa del Documento", font=("Roboto", 16), text_color="gray")
-        self.lbl_preview.grid(row=0, column=0, sticky="nsew", padx=20, pady=20)
+        # Título del panel derecho
+        preview_title = ctk.CTkFrame(self.frame_right, fg_color="transparent", height=40)
+        preview_title.grid(row=0, column=0, sticky="ew", padx=20, pady=(15, 5))
+        
+        ctk.CTkLabel(preview_title, text="VISTA PREVIA", 
+                     font=("Roboto", 18, "bold"), text_color=COLOR_ACENTO).pack(side="left")
+        
+        # Línea decorativa
+        separator = ctk.CTkFrame(preview_title, height=2, fg_color=COLOR_ACENTO, corner_radius=1)
+        separator.pack(side="bottom", fill="x", pady=(5, 0))
 
-        # Botones de Acción Post-Proceso
-        self.frame_actions = ctk.CTkFrame(self.frame_right, fg_color="transparent")
-        self.frame_actions.grid(row=1, column=0, pady=20)
+        # Contenedor para la imagen de vista previa
+        self.preview_container = ctk.CTkFrame(self.frame_right, fg_color="transparent")
+        self.preview_container.grid(row=1, column=0, sticky="nsew", padx=20, pady=10)
+        self.preview_container.grid_rowconfigure(0, weight=1)
+        self.preview_container.grid_columnconfigure(0, weight=1)
+
+        # Label para la imagen con fondo personalizado
+        self.lbl_preview = ctk.CTkLabel(self.preview_container, 
+                                       text="\n\n📄 Vista Previa del Documento\n\n(Cargue un archivo PDF)", 
+                                       font=("Roboto", 16), text_color=COLOR_TEXTO_SECUNDARIO,
+                                       fg_color="#0f1e2e", corner_radius=8)
+        self.lbl_preview.grid(row=0, column=0, sticky="nsew")
+
+        # Botones de Acción con mejor diseño
+        self.frame_actions = ctk.CTkFrame(self.frame_right, fg_color="transparent", height=70)
+        self.frame_actions.grid(row=2, column=0, sticky="ew", padx=20, pady=15)
+        self.frame_actions.grid_columnconfigure(0, weight=1)
+        self.frame_actions.grid_columnconfigure(1, weight=1)
+        self.frame_actions.grid_columnconfigure(2, weight=1)
 
         # Abrir (Verde)
         self.btn_open = ctk.CTkButton(self.frame_actions, text="👁️ ABRIR PDF", state="disabled", 
                                       command=self.open_file, 
-                                      fg_color=COLOR_VERDE, hover_color="#00a884", 
-                                      width=180, height=45, font=("Roboto", 13, "bold"))
-        self.btn_open.pack(side="left", padx=10)
+                                      fg_color=COLOR_VERDE, hover_color=COLOR_VERDE_HOVER, 
+                                      height=50, font=("Roboto", 14, "bold"), corner_radius=8)
+        self.btn_open.grid(row=0, column=0, padx=5, sticky="ew")
         
         # Limpiar (Rojo)
         self.btn_clean = ctk.CTkButton(self.frame_actions, text="🗑️ LIMPIAR", 
                                        command=self.reset_form, 
-                                       fg_color=COLOR_ROJO, hover_color="#c0392b", 
-                                       width=140, height=45, font=("Roboto", 13, "bold"))
-        self.btn_clean.pack(side="left", padx=10)
+                                       fg_color=COLOR_ROJO, hover_color=COLOR_ROJO_HOVER, 
+                                       height=50, font=("Roboto", 14, "bold"), corner_radius=8)
+        self.btn_clean.grid(row=0, column=1, padx=5, sticky="ew")
+        
+        # Información (Azul)
+        self.btn_info = ctk.CTkButton(self.frame_actions, text="ℹ️ INFO", 
+                                      command=self.show_info, 
+                                      fg_color=COLOR_GRIS_OSCURO, hover_color="#4b6584", 
+                                      height=50, font=("Roboto", 14, "bold"), corner_radius=8)
+        self.btn_info.grid(row=0, column=2, padx=5, sticky="ew")
 
-    # --- LÓGICA DE ARCHIVOS Y PREVIEW ---
+    def show_info(self):
+        messagebox.showinfo("Información del Sistema", 
+                           "Sistema de Certificación Digital IISEP v2.1\n\n"
+                           "Este sistema permite generar certificados digitales "
+                           "con código QR para validación en línea.\n\n"
+                           "Características:\n"
+                           "• Generación automática de QR de validación\n"
+                           "• Registro en base de datos en la nube\n"
+                           "• Vista previa de documentos\n"
+                           "• Interfaz optimizada para IISEP")
+
+    # --- LÓGICA DE ARCHIVOS Y PREVIEW (sin cambios) ---
     def select_file(self):
         path = filedialog.askopenfilename(filetypes=[("PDF", "*.pdf")])
         if path:
@@ -215,7 +301,7 @@ class SingleCertApp(ctk.CTk):
             img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
             doc.close()
 
-            h_avail = self.frame_right.winfo_height() - 100
+            h_avail = self.preview_container.winfo_height() - 20
             if h_avail < 400: h_avail = 500
             
             ratio = h_avail / float(img.size[1])
@@ -237,7 +323,8 @@ class SingleCertApp(ctk.CTk):
             messagebox.showwarning("Atención", "El DNI es obligatorio.")
             return
 
-        self.btn_process.configure(state="disabled", text="⏳ Procesando...", fg_color="#34495e")
+        self.btn_process.configure(state="disabled", text="⏳ Procesando...", 
+                                  fg_color=COLOR_GRIS_OSCURO, hover_color=COLOR_GRIS_OSCURO)
         
         datos = {
             "nom": self.entry_nom.get().upper().strip(),
@@ -314,10 +401,14 @@ class SingleCertApp(ctk.CTk):
                 msg = "Fallo de Internet: No se pudo conectar a la base de datos."
             
             self.after(0, lambda: messagebox.showerror("Error", msg))
-            self.after(0, lambda: self.btn_process.configure(state="normal", text="✨ GENERAR CERTIFICADO", fg_color=COLOR_ACENTO))
+            self.after(0, lambda: self.btn_process.configure(state="normal", 
+                                                           text="✨ GENERAR CERTIFICADO", 
+                                                           fg_color=COLOR_ACENTO,
+                                                           hover_color=COLOR_ACENTO_HOVER))
 
     def on_success(self):
-        self.btn_process.configure(state="normal", text="✨ GENERAR CERTIFICADO", fg_color=COLOR_ACENTO)
+        self.btn_process.configure(state="normal", text="✨ GENERAR CERTIFICADO", 
+                                 fg_color=COLOR_ACENTO, hover_color=COLOR_ACENTO_HOVER)
         self.btn_open.configure(state="normal")
         messagebox.showinfo("Éxito", "Certificado generado y validado correctamente.")
         
@@ -338,8 +429,8 @@ class SingleCertApp(ctk.CTk):
         self.btn_open.configure(state="disabled")
         
         self.preview_image_ref = None 
-        self.lbl_preview.configure(image=None, text="\n\nVista Previa del Documento\n(Cargue un nuevo PDF)")
-        self.lbl_preview.update()
+        self.lbl_preview.configure(image=None, 
+                                 text="\n\n📄 Vista Previa del Documento\n\n(Cargue un archivo PDF)")
 
 if __name__ == "__main__":
     app = SingleCertApp()
