@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Técnico - Certificador IISEP v2.5</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            /* Colores extraídos de tus capturas */
+            --primary-dark: #0f172a;  /* Fondo oscuro de la app */
+            --primary-blue: #0f5bb5;  /* Botones azules */
+            --text-main: #1e293b;     /* Texto gris oscuro para lectura en papel */
+            --text-muted: #64748b;
+            --border: #cbd5e1;
+            --bg-paper: #ffffff;
+        }
+
+        /* --- Configuración General --- */
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            line-height: 1.5; 
+            color: var(--text-main); 
+            background-color: #f1f5f9; 
+            margin: 0; 
+            padding: 40px;
+        }
+
+        /* --- Hoja A4 Simulada --- */
+        .page-container {
+            max-width: 210mm; 
+            margin: 0 auto;
+            background: var(--bg-paper);
+            padding: 0; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        /* --- Portada --- */
+        .cover-page {
+            background: var(--primary-dark);
+            color: white;
+            padding: 80px 50px;
+            text-align: center;
+            border-bottom: 8px solid var(--primary-blue);
+            margin-bottom: 40px;
+        }
+        .cover-logo { font-size: 3rem; margin-bottom: 20px; color: var(--primary-blue); }
+        .cover-title { font-size: 2.2rem; font-weight: 700; margin: 0; letter-spacing: -0.5px; text-transform: uppercase; }
+        .cover-subtitle { font-size: 1.1rem; opacity: 0.9; margin-top: 15px; font-weight: 300; }
+        .cover-meta { margin-top: 50px; font-size: 0.85rem; opacity: 0.6; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px; display: inline-block; }
+
+        /* --- Contenido --- */
+        .content-padding { padding: 0 60px 60px 60px; }
+
+        h2 {
+            color: var(--primary-blue);
+            font-size: 1.3rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+            margin-top: 40px;
+            margin-bottom: 25px;
+            page-break-after: avoid;
+        }
+
+        /* --- Bloques de Pasos (Anti-Ruptura) --- */
+        .step-block {
+            margin-bottom: 30px;
+            /* Esta es la clave para que imagen y texto no se separen */
+            break-inside: avoid;
+            page-break-inside: avoid;
+            display: block;
+        }
+
+        .step-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .step-number {
+            background: var(--primary-dark); color: white;
+            width: 24px; height: 24px; border-radius: 4px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem; font-weight: bold;
+        }
+
+        /* --- Manejo de Imágenes --- */
+        .img-container {
+            border: 1px solid #e2e8f0;
+            padding: 5px;
+            border-radius: 4px;
+            background: #f8fafc;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .img-container img {
+            max-width: 100%;
+            height: auto;
+            /* Altura máxima controlada para que no ocupe toda la hoja */
+            max-height: 350px; 
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* --- Notas Técnicas --- */
+        .technical-note {
+            background: #f0f9ff;
+            border-left: 4px solid var(--primary-blue);
+            padding: 15px;
+            font-size: 0.9rem;
+            margin: 15px 0;
+            color: #0c4a6e;
+            break-inside: avoid;
+        }
+
+        /* --- Botón Flotante para Imprimir --- */
+        .print-btn {
+            position: fixed; top: 20px; right: 20px;
+            background: var(--primary-blue); color: white;
+            padding: 12px 20px; border: none; border-radius: 6px;
+            font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1000; font-family: 'Inter', sans-serif; display: flex; align-items: center; gap: 8px;
+        }
+        .print-btn:hover { background-color: #0a458a; }
+
+        footer {
+            margin-top: 60px; padding-top: 20px;
+            border-top: 1px solid var(--border);
+            text-align: center; font-size: 0.75rem; color: var(--text-muted);
+        }
+
+        /* --- Estilos de Impresión (PDF) --- */
+        @media print {
+            body { background: white; padding: 0; margin: 0; }
+            .page-container { box-shadow: none; width: 100%; max-width: 100%; margin: 0; }
+            .print-btn { display: none !important; }
+            .img-container { border: 1px solid #ddd; }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="print-btn" onclick="window.print()">
+        <i class="fas fa-file-pdf"></i> Guardar como PDF
+    </button>
+
+    <div class="page-container">
+        
+        <div class="cover-page">
+            <div class="cover-logo"><i class="fas fa-certificate"></i></div>
+            <h1 class="cover-title">Manual de Usuario</h1>
+            <div class="cover-subtitle">Sistema de Certificación Digital v2.5</div>
+            
+            <div class="cover-meta">
+                Área de Desarrollo Tecnológico - IISEP<br>
+                Noviembre 2025
+            </div>
+        </div>
+
+        <div class="content-padding">
+            
+            <div class="technical-note">
+                <strong><i class="fas fa-info-circle"></i> Requisito del Sistema:</strong>
+                Para el correcto funcionamiento del registro en base de datos y la generación del código QR, el equipo debe contar con <strong>conexión a internet activa</strong>.
+            </div>
+
+            <h2>1. Interfaz de Usuario</h2>
+            <div class="step-block">
+                <p>El sistema presenta un diseño oscuro para reducir la fatiga visual. La pantalla principal se divide en dos secciones operativas:</p>
+                <ul>
+                    <li><strong>Panel Izquierdo:</strong> Controles de entrada (Carga de archivos y Datos).</li>
+                    <li><strong>Panel Derecho:</strong> Área de visualización previa del documento.</li>
+                </ul>
+                
+                <div class="img-container">
+                    <img src="img_full.png" alt="Vista General de la Interfaz">
+                </div>
+            </div>
+
+            <h2>2. Proceso de Emisión</h2>
+
+            <div class="step-block">
+                <div class="step-title"><span class="step-number">1</span> Carga de Plantilla Base</div>
+                <p>En el apartado "DOCUMENTO BASE", haga clic en el botón <strong>CARGAR PDF (PLANTILLA)</strong>.</p>
+                <p>Debe seleccionar el archivo PDF que contiene el diseño de fondo del certificado (sin nombres ni fechas).</p>
+                
+                <div class="img-container">
+                    <img src="img_load.png" alt="Botón Cargar PDF" style="max-height: 150px;">
+                </div>
+            </div>
+
+            <div class="step-block">
+                <div class="step-title"><span class="step-number">2</span> Registro de Datos</div>
+                <p>En la sección "DATOS DEL ESTUDIANTE", complete la información requerida:</p>
+                <ul>
+                    <li><strong>Nombre Completo:</strong> Ingrese el nombre. El sistema lo formateará a mayúsculas automáticamente.</li>
+                    <li><strong>DNI:</strong> Ingrese el documento de identidad (Solo números).</li>
+                    <li><strong>Especialidad:</strong> Seleccione la carrera o taller del listado desplegable (ej. Computación).</li>
+                </ul>
+
+                <div class="img-container">
+                    <img src="img_data.png" alt="Formulario de Datos" style="max-height: 250px;">
+                </div>
+            </div>
+
+            <div class="step-block">
+                <div class="step-title"><span class="step-number">3</span> Generación y Validación</div>
+                <p>Una vez verificados los datos, presione el botón azul inferior <strong>GENERAR CERTIFICADO</strong>.</p>
+                <p>El sistema realizará las siguientes acciones automáticas:</p>
+                <ol>
+                    <li>Registrará al alumno en la base de datos institucional (Supabase).</li>
+                    <li>Generará un código QR único vinculado al validador web.</li>
+                    <li>Guardará el archivo final en la carpeta <code>/CERTIFICADOS_LISTOS</code>.</li>
+                </ol>
+            </div>
+
+            <h2>3. Controles Adicionales</h2>
+            
+            <div class="step-block">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <tr style="background-color: #f1f5f9; text-align: left;">
+                        <th style="padding: 10px; border-bottom: 2px solid #cbd5e1;">Botón</th>
+                        <th style="padding: 10px; border-bottom: 2px solid #cbd5e1;">Función</th>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #10b981; font-weight: bold;">ABRIR PDF</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">Abre el documento generado recientemente en su visor predeterminado.</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #ef4444; font-weight: bold;">LIMPIAR TODO</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">Reinicia el formulario y la vista previa para procesar un nuevo alumno.</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold;">INFO</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">Muestra información sobre la versión del software.</td>
+                    </tr>
+                </table>
+            </div>
+
+            <footer>
+                Documentación generada automáticamente para IISEP.<br>
+                Uso interno exclusivo.
+            </footer>
+        </div>
+    </div>
+
+</body>
+</html>
